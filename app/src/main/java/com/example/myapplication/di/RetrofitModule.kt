@@ -1,5 +1,6 @@
 package com.example.myapplication.di
 
+import com.example.myapplication.service.SerieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
