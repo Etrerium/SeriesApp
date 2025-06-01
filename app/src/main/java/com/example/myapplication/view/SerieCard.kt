@@ -8,13 +8,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -25,12 +29,15 @@ fun SerieCard(serie: Serie) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(320.dp)
-            .padding(4.dp),
-        shape = RoundedCornerShape(12.dp)
+            .height(350.dp)
+            .padding(8.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B)), // couleur du fond
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column(
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = rememberAsyncImagePainter(serie.image_thumbnail_path),
@@ -42,43 +49,60 @@ fun SerieCard(serie: Serie) {
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = serie.name,
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Info pays et plateforme de streaming
+            val pays = serie.country ?: "?"
+            val reseau = serie.network ?: "?"
+            Text(
+                text = "🌍 $pays  -  📺 $reseau",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF94A3B8), // gris bleuté
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Date de début
             serie.start_date?.let {
                 Text(
-                    text = "Début : $it",
+                    text = "📅 Début : $it",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
+                    color = Color(0xFFCBD5E1),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            serie.country?.let {
-                Text(
-                    text = "Pays : $it",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            Spacer(modifier = Modifier.height(12.dp))
 
-            serie.network?.let {
-                Text(
-                    text = "Réseau : $it",
-                    style = MaterialTheme.typography.bodySmall
-                )
+            // Statut (en cours ou terminée)
+            val statusText = serie.status?.lowercase() ?: "inconnu"
+            val statusColor = when (statusText) {
+                "running" -> Color(0xFF22C55E) // vert
+                "ended" -> Color(0xFFEF4444) // rouge
+                else -> Color(0xFF94A3B8) // gris neutre
             }
-
-            serie.status?.let {
-                Text(
-                    text = "Statut : $it",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            Text(
+                text = "Status : ${serie.status ?: "?"}",
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                color = statusColor,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
